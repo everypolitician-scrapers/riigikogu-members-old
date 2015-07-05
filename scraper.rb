@@ -18,7 +18,7 @@ def date_from(t)
   Date.parse(t).to_s rescue ''
 end
 
-def scrape_list(url)
+def scrape_list(url, term_id)
   noko = noko_for(url)
   table = noko.at_xpath('.//h2[contains(., "Riigikogu liikmed")]/following::table')
   table.css('tr').drop(1).each do |tr|
@@ -30,7 +30,7 @@ def scrape_list(url)
       name: name,
       party: party,
       birth_date: date_from(tds[1].text.strip),
-      term: 12,
+      term: term_id,
       notes: notes,
     }
     puts data
@@ -38,4 +38,11 @@ def scrape_list(url)
   end
 end
 
-scrape_list('http://www.riigikogu.ee/tutvustus-ja-ajalugu/riigikogu-ajalugu/xii-riigikogu-koosseis/juhatus-ja-liikmed/')
+terms = { 
+  12 => 'http://www.riigikogu.ee/tutvustus-ja-ajalugu/riigikogu-ajalugu/xii-riigikogu-koosseis/juhatus-ja-liikmed/',
+  11 => 'http://www.riigikogu.ee/tutvustus-ja-ajalugu/riigikogu-ajalugu/xi-riigikogu-koosseis/juhatus-ja-liikmed/',
+}
+
+terms.each do |id, url|
+  scrape_list(url, id)
+end
